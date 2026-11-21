@@ -1,0 +1,52 @@
+<configuration>
+    # Console appender
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            # Pattern of log message for console appender
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</Pattern>
+        </layout>
+    </appender>
+
+    # File appender
+    <appender name="DAILY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!-- NOTICE: We leave out the <file> tag completely! -->
+        <!-- This forces Logback to write directly to the active date file -->
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- This pattern defines how often it rolls. yyyy-MM-dd means DAILY -->
+            <fileNamePattern>logs/text/admin-%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- Optional: Keep 30 days worth of history -->
+            <maxHistory>30</maxHistory>
+
+            <!-- Optional: Total cap for all logs combined -->
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Saved daily in a completely separate 'logs/json/' folder -->
+            <fileNamePattern>logs/json/admin-%d{yyyy-MM-dd}.json</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!-- Notice the Logging Class changes here to use the Logstash Encoder -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    # Override log level for specified package
+
+    <root level="INFO">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="DAILY_FILE" />
+        <appender-ref ref="JSON_FILE" />
+
+    </root>
+</configuration>
